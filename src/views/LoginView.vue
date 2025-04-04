@@ -1,18 +1,40 @@
 <template>
-    <Card>
-    <template #title>Login</template>
-    <template #content>
-        <Form v-slot="$form" :resolver="resolver" :initialValues="initialValues" @submit="onFormSubmit" class="flex justify-center flex-col gap-4">
-            <div class="flex flex-col gap-1">
-                <InputText name="username" type="text" placeholder="Username" />
-                <Message v-if="$form.username?.invalid" severity="error" size="small" variant="simple">{{ $form.username.error?.message }}</Message>
-            </div>
-            <div class="flex flex-col gap-1">
-                <InputText name="email" type="text" placeholder="Email" />
-                <Message v-if="$form.email?.invalid" severity="error" size="small" variant="simple">{{ $form.email.error?.message }}</Message>
-            </div>
-            <Button type="submit" severity="secondary" label="Submit" />
-        </Form>
-    </template>
-</Card>
+    <div class="bg-black">
+        <div class="card flex justify-center">
+            <Form :resolver="resolver" @submit="onFormSubmit" class="flex flex-col gap-4 w-full sm:w-56">
+                <FormField v-slot="$field" as="section" name="username" initialValue="" class="flex flex-col gap-2">
+                    <InputText type="text" placeholder="Username" />
+                    <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">{{ $field.error?.message }}</Message>
+                </FormField>
+                <FormField v-slot="$field" asChild name="password" initialValue="">
+                    <section class="flex flex-col gap-2">
+                        <Password type="text" placeholder="Password" :feedback="false" toggleMask fluid />
+                        <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">{{ $field.error?.message }}</Message>
+                    </section>
+                </FormField>
+                <Button type="submit" severity="secondary" label="Submit" />
+            </Form>
+        </div>
+    </div>
 </template>
+
+<script lang="ts" setup>
+import { zodResolver } from '@primevue/forms/resolvers/zod';
+import { z } from 'zod';
+import { useToast } from 'primevue/usetoast';
+
+const toast = useToast();
+
+const resolver = zodResolver(
+    z.object({
+        username: z.string().min(1, { message: 'Username is required.' }),
+        password: z.string().min(1, { message: 'Password is required.' })
+    })
+);
+
+const onFormSubmit = ({ valid }: { valid: boolean }) => {
+    if (valid) {
+        toast.add({ severity: 'success', summary: 'Form is submitted.', life: 3000 });
+    }
+};
+</script>
