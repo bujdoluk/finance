@@ -22,6 +22,8 @@
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import { useToast } from 'primevue/usetoast';
+import supabase from "../config/supabaseClient.js"
+import { onMounted} from "vue";
 
 const toast = useToast();
 
@@ -37,4 +39,8 @@ const onFormSubmit = ({ valid }: { valid: boolean }) => {
         toast.add({ severity: 'success', summary: 'Form is submitted.', life: 3000 });
     }
 };
+
+onMounted(() => {
+    console.log(supabase);
+})
 </script>
